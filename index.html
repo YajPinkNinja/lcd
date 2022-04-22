@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/file.css">
+    <style>
+        /* Style the button that is used to open and close the collapsible content */
+        .collapsible {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+        /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+        .active,
+        .collapsible:hover {
+            background-color: #ccc;
+        }
+
+        /* Style the collapsible content. Note: hidden by default */
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+    </style>
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+</head>
+
+<body>
+    <h>Arduino code</h>
+    <br>    
+    <button type="button" class="collapsible">Magic 8-ball</button>
+    <div class="content">
+        <pre class="prettyprint lang-cpp">
+            #include &ltLiquidCrystal.h &gt
+
+            LiquidCrystal lcd(12, 11, 2, 3, 4, 5); // RS, E, D4, D5, D6, D7
+            
+            byte topleft[] = {
+                B00000,
+                B00000,
+                B00000,
+                B00011,
+                B00100,
+                B00100,
+                B01000,
+                B01000};
+            
+            byte topmiddle[] = {
+                B00000,
+                B00000,
+                B11110,
+                B00001,
+                B00000,
+                B01100,
+                B10010,
+                B10010};
+            
+            byte topright[] = {
+                B00000,
+                B00000,
+                B00000,
+                B10000,
+                B01000,
+                B01000,
+                B00100,
+                B00100};
+            
+            byte bottomleft[] = {
+                B01000,
+                B01000,
+                B00100,
+                B00100,
+                B00011,
+                B00000,
+                B00000,
+                B00000};
+            
+            byte bottommiddle[] = {
+                B01100,
+                B10010,
+                B10010,
+                B01100,
+                B00001,
+                B11110,
+                B00000,
+                B00000};
+            
+            byte bottomright[] = {
+                B00100,
+                B00100,
+                B01000,
+                B01000,
+                B10000,
+                B00000,
+                B00000,
+                B00000};
+            
+            uint8_t topl = 0;
+            uint8_t topm = 1;
+            uint8_t topr = 2;
+            uint8_t botl = 3;
+            uint8_t botm = 4;
+            uint8_t botr = 5;
+            int lengte = 0;
+            int reply = random(8);
+            
+            void setup()
+            {
+                analogWrite(6, 60);
+                lcd.begin(16, 2);
+                lcd.createChar(topl, topleft);
+                lcd.createChar(topm, topmiddle);
+                lcd.createChar(topr, topright);
+                lcd.createChar(botl, bottomleft);
+                lcd.createChar(botm, bottommiddle);
+                lcd.createChar(botr, bottomright);
+            }
+            
+            void loop()
+            {
+                if (digitalRead(7) == HIGH)
+                {
+                    reply = random(8);
+                    while (digitalRead(7) == HIGH)
+                    {
+                        delay(1);
+                    }
+                }
+            
+                switch (reply)
+                {
+                case 0:
+                    ballprint("Yes");
+                    break;
+            
+                case 1:
+                    ballprint("Most likely");
+                    break;
+            
+                case 2:
+                    ballprint("Certainly");
+                    break;
+            
+                case 3:
+                    ballprint("Outlook good");
+                    break;
+            
+                case 4:
+                    ballprint("Unsure");
+                    break;
+            
+                case 5:
+                    ballprint("Ask again");
+                    break;
+            
+                case 6:
+                    ballprint("Doubtful");
+                    break;
+            
+                case 7:
+                    ballprint("No");
+                    break;
+                }
+            
+                delay(1000);
+            }
+            
+            void ballprint(String msg)
+            {
+                lcd.clear();
+                lcd.setCursor(0, 0);
+                if (msg.length() > 13)
+                {
+                    lcd.print("The message is");
+                    lcd.setCursor(0, 1);
+                    lcd.print("too long!");
+                    return;
+                }
+                lcd.write(topl);
+                lcd.setCursor(1, 0);
+                lcd.write(topm);
+                lcd.setCursor(2, 0);
+                lcd.write(topr);
+                lcd.setCursor(0, 1);
+                lcd.write(botl);
+                lcd.setCursor(1, 1);
+                lcd.write(botm);
+                lcd.setCursor(2, 1);
+                lcd.write(botr);
+                lcd.setCursor(3, 0);
+                lcd.print("8-ball says:");
+                lcd.setCursor(3, 2);
+                lcd.print(msg);
+            }
+            
+        </pre>
+    </div>
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
