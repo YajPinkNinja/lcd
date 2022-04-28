@@ -208,6 +208,45 @@
             
         </pre>
     </div>
+    <button type="button" class="collapsible">Temperatuur</button>
+    <div class="content">
+        <pre class="prettyprint lang-cpp">
+            #include <LiquidCrystal.h>
+
+            LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+                
+            const int temp = 'A2';
+            int prevtemp = 0;
+                
+            void setup() {
+                lcd.begin(16, 2);
+            }
+                
+            void loop() {
+                int input = analogRead(A2);
+                int mv = inputToMilliVolts(input, 5000.00, 1023.00);
+                int degrees = milliVoltsToDegrees(mv);
+                if(degrees != prevtemp){
+                    lcd.clear();
+                    prevtemp = degrees;
+                }
+                lcd.setCursor(0, 0);
+                lcd.write("Het is ");
+                lcd.print(degrees);
+                lcd.setCursor(0, 1);
+                lcd.write("graden celcius");
+            }
+                
+            int inputToMilliVolts(int input, double offset, double max){
+                return (input*(offset/max));
+            }
+                
+            int milliVoltsToDegrees(int mv){
+                return ((mv-500)/10);
+            }
+            
+        </pre>
+    </div>
     <script>
         var coll = document.getElementsByClassName("collapsible");
         var i;
